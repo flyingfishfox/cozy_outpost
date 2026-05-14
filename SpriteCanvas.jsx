@@ -178,11 +178,18 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
 
       if(ZOOM > 1){
         if(s.camX===undefined) s.camX = s.playerX;
-        // Very slow lerp — barely moves, no dizziness
         s.camX += (s.playerX - s.camX) * 0.03;
-        const playerScreenX = ox + s.camX * sw;
+        // Clamp camera so edges never go outside the background
+        const halfW = (W / 2) / ZOOM;
+        const sceneLeft  = ox / sw;
+        const sceneRight = (ox + sw) / sw;
+        const minCam = sceneLeft  + halfW / sw;
+        const maxCam = sceneRight - halfW / sw;
+        const clampedCam = Math.max(minCam, Math.min(maxCam, s.camX));
+        const playerScreenX = ox + clampedCam * sw;
         const tx = W/2 - playerScreenX * ZOOM;
-        const ty = (H/2 - groundY * ZOOM) * 0.5;
+        // Clamp vertical so top/bottom don't go outside
+        const ty = Math.min(0, H/2 - groundY * ZOOM);
         ctx.save();
         ctx.setTransform(dpr*ZOOM, 0, 0, dpr*ZOOM, tx*dpr, ty*dpr);
       }
