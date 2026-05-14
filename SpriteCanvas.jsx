@@ -63,7 +63,7 @@ function getSceneRect(W,H){
   return{ox:Math.floor((W-sw)/2),oy:Math.floor((H-sh)/2),sw,sh};
 }
 
-function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch,setNearZombie,zombiesLeft,watching,keysDown,killZombie,onZombieKilled,day,weather}){
+function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch,setNearZombie,zombiesLeft,watching,keysDown,killZombie,onZombieKilled,day,weather,keysDownRef:externalKeysDownRef}){
   const cvRef        = useRef(null);
   const sceneRef     = useRef(scene);
   const stateRef     = useRef({
@@ -216,8 +216,8 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
 
       // ── Player input ──────────────────────────────────────────────────
       const scoutBusy = scoutCmdRef.current==='sit'||scoutCmdRef.current==='beg'||stateRef.current.fetchPhase>0;
-      const goLeft  = !scoutBusy && (keys['ArrowLeft'] ||keys['a']||keysDownRef.current.left);
-      const goRight = !scoutBusy && (keys['ArrowRight']||keys['d']||keysDownRef.current.right);
+      const goLeft  = !scoutBusy && (keys['ArrowLeft'] ||keys['a']||(externalKeysDownRef?.current?.left)||keysDownRef.current.left);
+      const goRight = !scoutBusy && (keys['ArrowRight']||keys['d']||(externalKeysDownRef?.current?.right)||keysDownRef.current.right);
 
       if(isWatching){
         s.playerMoving=false; s.playerRow=ROW_BACK;
