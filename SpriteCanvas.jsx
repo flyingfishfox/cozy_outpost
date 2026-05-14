@@ -450,12 +450,22 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
           killZombieRef.current=false;
           const currentAction=actionRef.current;
           const range=currentAction==='stab'?STAB_RANGE:SHOOT_RANGE;
-          // Find closest alive zombie within range
+          // Find closest alive zombie within range AND in the direction player is facing
           let target=null, bestDist=Infinity;
           for(const z of s.zombies){
             if(z.dead||z.dying) continue;
             const dist=Math.abs(s.playerX-z.x);
-            if(dist<range && dist<bestDist){ bestDist=dist; target=z; }
+            if(dist>=range||dist>=bestDist) continue;
+            // For shoot: zombie must be in direction player is facing
+            if(currentAction==='shoot'){
+              const facingRight=s.playerRow===ROW_RIGHT||s.playerRow===ROW_FRONT;
+              const facingLeft=s.playerRow===ROW_LEFT;
+              const zombieToRight=z.x>s.playerX;
+              const zombieToLeft=z.x<s.playerX;
+              if(facingRight&&!zombieToRight) continue;
+              if(facingLeft&&!zombieToLeft) continue;
+            }
+            bestDist=dist; target=z;
           }
           if(target){
             target.dying=true;
@@ -468,10 +478,9 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
         // Remove fully dead zombies
         s.zombies=s.zombies.filter(z=>!z.dead);
 
-        // Scout
+        // Scout — just wag in place at outpost, no barking
         if(scoutCmdRef.current!=='sleep'){
-          if(aliveZombies.length>0) drawScoutBark();
-          else drawScout03(0.07, SCOUT_SIT, true);
+          drawScout03(0.07, SCOUT_WAG, true);
         }
 
         s.zombies.forEach(z=>drawZombie(z));
@@ -503,16 +512,18 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
 
         drawPlayer();
         drawAnimal('pig',0.12,0.17,22,'pigFrame','pigTick');
-        // Cat in front
+        // Cat — slow idle animation always, jump occasionally
         s.catJumpTimer++;
         if(!s.catJumping&&s.catJumpTimer>=380){s.catJumping=true;s.catJumpTimer=0;s.catFrame=0;s.catTick=0;}
-        if(s.catJumping&&s.catJumpTimer>=60){s.catJumping=false;s.catFrame=0;}
+        if(s.catJumping&&s.catJumpTimer>=80){s.catJumping=false;s.catFrame=0;s.catTick=0;}
         const catImg=s.images['cat'];
         if(catImg&&catImg.complete&&catImg.naturalWidth){
           const totalF=Math.max(1,Math.floor(catImg.naturalWidth/catImg.naturalHeight));
-          if(s.catJumping){s.catTick++;if(s.catTick>=10){s.catTick=0;s.catFrame=(s.catFrame+1)%totalF;}}
+          s.catTick++;
+          const tickSpeed = s.catJumping ? 8 : 18; // slower when idle
+          if(s.catTick>=tickSpeed){s.catTick=0;s.catFrame=(s.catFrame+1)%totalF;}
           const dh=sh*0.11,dfw=catImg.naturalWidth/totalF,dw=dh*(dfw/catImg.naturalHeight);
-          ctx.drawImage(catImg,(s.catJumping?s.catFrame%totalF:0)*dfw,0,dfw,catImg.naturalHeight,
+          ctx.drawImage(catImg,s.catFrame*dfw,0,dfw,catImg.naturalHeight,
             Math.round(ox+sw*0.82-dw/2),Math.round(groundY-dh*0.95),Math.round(dw),Math.round(dh));
         }
       }
