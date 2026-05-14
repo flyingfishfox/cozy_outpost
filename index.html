@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Cozy Outpost</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -90,7 +90,6 @@ const WATCH_LINES = [
   "The grass moves like water.",
   "Something's circling up there. Hawk maybe.",
   "Everything very far away. Good.",
-  "Gerald snorts softly. Good pig.",
   "Clear skies today.",
   "You could do this all day.",
   "Quiet.",
@@ -99,7 +98,6 @@ const WATCH_LINES = [
   "Scout sits beside you. Good dog.",
   "The wind comes down from the peaks. Cold. Clean.",
   "Nothing to do. That's the point.",
-  "Gerald looks up. Goes back to eating.",
 ];
 
 const MORNING_LINES = [
@@ -434,9 +432,9 @@ function GameScreen(props){
           </div>
         )}
 
-        {/* Watch text */}
+        {/* Watch text — small, fades out so it doesn't block the view */}
         {watching && watchText && (
-          <div style={{position:'absolute',bottom:'38%',left:'50%',transform:'translateX(-50%)',background:'rgba(10,6,2,0.82)',border:'1px solid rgba(252,244,210,0.12)',padding:'7px 14px',fontFamily:'VT323',fontSize:16,color:'rgba(252,244,210,0.85)',zIndex:90,maxWidth:'85%',textAlign:'center',lineHeight:1.4}}>
+          <div key={watchText} style={{position:'absolute',bottom:'12%',left:'50%',transform:'translateX(-50%)',padding:'4px 10px',fontFamily:'VT323',fontSize:14,color:'rgba(252,244,210,0.7)',zIndex:90,maxWidth:'70%',textAlign:'center',lineHeight:1.3,animation:'bubbleFade 4s ease-out forwards',pointerEvents:'none',whiteSpace:'nowrap'}}>
             {watchText}
           </div>
         )}
