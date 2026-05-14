@@ -188,8 +188,10 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
         const clampedCam = Math.max(minCam, Math.min(maxCam, s.camX));
         const playerScreenX = ox + clampedCam * sw;
         const tx = W/2 - playerScreenX * ZOOM;
-        // Clamp vertical so top/bottom don't go outside
-        const ty = Math.min(0, H/2 - groundY * ZOOM);
+        // Center the scene vertically on screen
+        const scaledSceneH = sh * ZOOM;
+        const scaledOy = oy * ZOOM;
+        const ty = (H - scaledSceneH) / 2 - scaledOy;
         ctx.save();
         ctx.setTransform(dpr*ZOOM, 0, 0, dpr*ZOOM, tx*dpr, ty*dpr);
       }
