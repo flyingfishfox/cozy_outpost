@@ -63,7 +63,7 @@ function getSceneRect(W,H){
   return{ox:Math.floor((W-sw)/2),oy:Math.floor((H-sh)/2),sw,sh};
 }
 
-function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch,setNearZombie,zombiesLeft,watching,keysDown,killZombie,onZombieKilled,day}){
+function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch,setNearZombie,zombiesLeft,watching,keysDown,killZombie,onZombieKilled,day,weather}){
   const cvRef        = useRef(null);
   const sceneRef     = useRef(scene);
   const stateRef     = useRef({
@@ -116,7 +116,8 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
   useEffect(()=>{ scoutFetchRef.current=scoutFetch; },[scoutFetch]);
   useEffect(()=>{ zombiesLeftRef.current=zombiesLeft; },[zombiesLeft]);
   useEffect(()=>{ watchingRef.current=watching; },[watching]);
-  useEffect(()=>{ keysDownRef.current=keysDown; },[keysDown]);
+  const weatherRef     = useRef(weather);
+  useEffect(()=>{ weatherRef.current=weather; },[weather]);
   useEffect(()=>{ if(killZombie>0){ killZombieRef.current=true; } },[killZombie]);
   useEffect(()=>{ stateRef.current.zombieDayTarget=day; },[day]);
 
@@ -179,24 +180,38 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
       ctx.imageSmoothingEnabled=false;
 
       // ── Clouds ────────────────────────────────────────────────────────
+      const isOvercast = weatherRef.current==='overcast';
       if(cur==='forest'){
         const fc1=s.images['cloud4'],fc2=s.images['cloud5'],fc3=s.images['cloud6'];
         s.fcloud1X+=0.00010;s.fcloud2X+=0.00014;s.fcloud3X+=0.00007;
         if(s.fcloud1X>1.15)s.fcloud1X=-0.35;
         if(s.fcloud2X>1.15)s.fcloud2X=-0.35;
         if(s.fcloud3X>1.15)s.fcloud3X=-0.35;
-        [[fc1,s.fcloud1X,0.26,0.05,0.90],[fc2,s.fcloud2X,0.18,0.03,0.75],[fc3,s.fcloud3X,0.22,0.08,0.60]].forEach(([c,cx,sc,yoff,alpha])=>{
+        const fAlpha=isOvercast?1.0:1.0;
+        const fScale=isOvercast?1.4:1.0;
+        [[fc1,s.fcloud1X,0.26*fScale,0.05,0.90],[fc2,s.fcloud2X,0.18*fScale,0.03,0.75],[fc3,s.fcloud3X,0.22*fScale,0.08,0.60]].forEach(([c,cx,sc,yoff,alpha])=>{
           if(c&&c.complete&&c.naturalWidth){const cw=sw*sc,ch=cw*(c.naturalHeight/c.naturalWidth);ctx.globalAlpha=alpha;ctx.drawImage(c,ox+cx*sw,oy+sh*yoff,cw,ch);ctx.globalAlpha=1;}
         });
+        if(isOvercast){
+          [[fc1,s.fcloud1X-0.55,0.30,0.12,0.70],[fc2,s.fcloud2X+0.35,0.24,0.01,0.65],[fc3,s.fcloud3X-0.30,0.20,0.15,0.55]].forEach(([c,cx,sc,yoff,alpha])=>{
+            if(c&&c.complete&&c.naturalWidth){const cw=sw*sc,ch=cw*(c.naturalHeight/c.naturalWidth);ctx.globalAlpha=alpha;ctx.drawImage(c,ox+cx*sw,oy+sh*yoff,cw,ch);ctx.globalAlpha=1;}
+          });
+        }
       } else {
         const c1=s.images['cloud1'],c2=s.images['cloud2'],c3=s.images['cloud3'];
         s.cloud1X+=0.00012;s.cloud2X+=0.00008;s.cloud3X+=0.00015;
         if(s.cloud1X>1.15)s.cloud1X=-0.35;
         if(s.cloud2X>1.15)s.cloud2X=-0.35;
         if(s.cloud3X>1.15)s.cloud3X=-0.35;
-        [[c1,s.cloud1X,0.28,0.04,0.88],[c2,s.cloud2X,0.20,0.09,0.72],[c3,s.cloud3X,0.16,0.02,0.58]].forEach(([c,cx,sc,yoff,alpha])=>{
-          if(c&&c.complete&&c.naturalWidth){const cw=sw*sc,ch=cw*(c.naturalHeight/c.naturalWidth);ctx.globalAlpha=alpha;ctx.drawImage(c,ox+cx*sw,oy+sh*yoff,cw,ch);ctx.globalAlpha=1;}
+        const sc=isOvercast?1.5:1.0;
+        [[c1,s.cloud1X,0.28*sc,0.04,0.88],[c2,s.cloud2X,0.20*sc,0.09,0.72],[c3,s.cloud3X,0.16*sc,0.02,0.58]].forEach(([c,cx,scl,yoff,alpha])=>{
+          if(c&&c.complete&&c.naturalWidth){const cw=sw*scl,ch=cw*(c.naturalHeight/c.naturalWidth);ctx.globalAlpha=isOvercast?Math.min(alpha+0.15,1):alpha;ctx.drawImage(c,ox+cx*sw,oy+sh*yoff,cw,ch);ctx.globalAlpha=1;}
         });
+        if(isOvercast){
+          [[c1,s.cloud1X-0.55,0.32,0.13,0.65],[c2,s.cloud2X+0.40,0.26,0.01,0.70],[c3,s.cloud3X-0.28,0.22,0.16,0.60]].forEach(([c,cx,scl,yoff,alpha])=>{
+            if(c&&c.complete&&c.naturalWidth){const cw=sw*scl,ch=cw*(c.naturalHeight/c.naturalWidth);ctx.globalAlpha=alpha;ctx.drawImage(c,ox+cx*sw,oy+sh*yoff,cw,ch);ctx.globalAlpha=1;}
+          });
+        }
       }
 
       // ── Player input ──────────────────────────────────────────────────
