@@ -512,16 +512,17 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
 
         drawPlayer();
         drawAnimal('pig',0.12,0.17,22,'pigFrame','pigTick');
-        // Cat — slow idle animation always, jump occasionally
+        // Cat — static normally, jumps occasionally
         s.catJumpTimer++;
         if(!s.catJumping&&s.catJumpTimer>=380){s.catJumping=true;s.catJumpTimer=0;s.catFrame=0;s.catTick=0;}
-        if(s.catJumping&&s.catJumpTimer>=80){s.catJumping=false;s.catFrame=0;s.catTick=0;}
+        if(s.catJumping&&s.catJumpTimer>=60){s.catJumping=false;s.catFrame=0;s.catTick=0;}
         const catImg=s.images['cat'];
         if(catImg&&catImg.complete&&catImg.naturalWidth){
           const totalF=Math.max(1,Math.floor(catImg.naturalWidth/catImg.naturalHeight));
-          s.catTick++;
-          const tickSpeed = s.catJumping ? 8 : 18; // slower when idle
-          if(s.catTick>=tickSpeed){s.catTick=0;s.catFrame=(s.catFrame+1)%totalF;}
+          if(s.catJumping){
+            s.catTick++;
+            if(s.catTick>=10){s.catTick=0;s.catFrame=(s.catFrame+1)%totalF;}
+          }
           const dh=sh*0.11,dfw=catImg.naturalWidth/totalF,dw=dh*(dfw/catImg.naturalHeight);
           ctx.drawImage(catImg,s.catFrame*dfw,0,dfw,catImg.naturalHeight,
             Math.round(ox+sw*0.82-dw/2),Math.round(groundY-dh*0.95),Math.round(dw),Math.round(dh));
