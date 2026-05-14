@@ -432,9 +432,9 @@ function GameScreen(props){
           </div>
         )}
 
-        {/* Watch text — fades out, smaller, higher up */}
+        {/* Watch text */}
         {watching && watchText && (
-          <div key={watchText} style={{position:'absolute',top:'22%',left:'50%',transform:'translateX(-50%)',background:'rgba(252,244,210,0.96)',border:'2px solid #886030',borderRadius:4,padding:'5px 12px',fontFamily:'VT323',fontSize:15,color:'#381e08',zIndex:90,maxWidth:'60%',textAlign:'center',lineHeight:1.4,animation:'bubbleFade 4s ease-out forwards',pointerEvents:'none',whiteSpace:'nowrap'}}>
+          <div key={watchText} style={{position:'absolute',bottom:'18%',left:'50%',transform:'translateX(-50%)',background:'rgba(252,244,210,0.96)',border:'2px solid #886030',borderRadius:4,padding:'6px 14px',fontFamily:'VT323',fontSize:16,color:'#381e08',zIndex:90,maxWidth:'75%',textAlign:'center',lineHeight:1.4,animation:'bubbleFade 3.6s ease-out forwards',pointerEvents:'none',whiteSpace:'nowrap'}}>
             {watchText}
           </div>
         )}
