@@ -58,6 +58,14 @@ const FOREST_EXIT_RIGHT = 0.92;
 const ZOMBIE_PROXIMITY  = 0.18;
 
 function getSceneRect(W,H){
+  const isMobile = 'ontouchstart' in window;
+  if(isMobile){
+    // Stretch to fill full height, center horizontally
+    const sh = H;
+    const sw = sh * SCENE_ASP;
+    const ox = Math.floor((W - sw) / 2);
+    return {ox, oy:0, sw, sh};
+  }
   let sw,sh;
   if(W/H>SCENE_ASP){sh=H;sw=sh*SCENE_ASP;}else{sw=W;sh=sw/SCENE_ASP;}
   return{ox:Math.floor((W-sw)/2),oy:Math.floor((H-sh)/2),sw,sh};
@@ -170,31 +178,9 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
       const groundY=oy+sh*0.872;
 
       const isMobile = 'ontouchstart' in window;
-      const isPortrait = isMobile && window.innerHeight > window.innerWidth;
-      const ZOOM = isPortrait ? 1.4 : 1.0;
 
       ctx.setTransform(dpr,0,0,dpr,0,0);
       ctx.clearRect(0,0,W,H);
-
-      if(ZOOM > 1){
-        if(s.camX===undefined) s.camX = s.playerX;
-        s.camX += (s.playerX - s.camX) * 0.03;
-        // Clamp camera so edges never go outside the background
-        const halfW = (W / 2) / ZOOM;
-        const sceneLeft  = ox / sw;
-        const sceneRight = (ox + sw) / sw;
-        const minCam = sceneLeft  + halfW / sw;
-        const maxCam = sceneRight - halfW / sw;
-        const clampedCam = Math.max(minCam, Math.min(maxCam, s.camX));
-        const playerScreenX = ox + clampedCam * sw;
-        const tx = W/2 - playerScreenX * ZOOM;
-        // Center the scene vertically on screen
-        const scaledSceneH = sh * ZOOM;
-        const scaledOy = oy * ZOOM;
-        const ty = (H - scaledSceneH) / 2 - scaledOy;
-        ctx.save();
-        ctx.setTransform(dpr*ZOOM, 0, 0, dpr*ZOOM, tx*dpr, ty*dpr);
-      }
 
       ctx.fillStyle='#29ABD9'; ctx.fillRect(0,0,W,H);
       // Background with smoothing for clean scaling
@@ -582,9 +568,6 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
       }
 
       // Restore transform after scene (so HUD rendered by React stays normal)
-      if(ZOOM > 1) ctx.restore();
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-
       animRef.current=requestAnimationFrame(loop);
     }
     animRef.current=requestAnimationFrame(loop);
