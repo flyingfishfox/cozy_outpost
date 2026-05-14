@@ -181,6 +181,7 @@ function App() {
   const [dayTransition,setDayTransition]   = useState(null);
   const [logEntries,setLogEntries] = useState([{day:1,text:'Arrived. Scout ran ahead.'}]);
   const [keys,setKeys]             = useState({left:false,right:false});
+  const keysDownRef                = useRef({left:false,right:false});
   // Track which day we last showed an outpost quote — one per day only
   const outpostQuoteDayRef         = useRef(-1);
   const sceneRef                   = useRef('home');
@@ -306,11 +307,16 @@ function App() {
   };
 
   useEffect(()=>{
-    // Day 1 init — set zombie count but never show sleep button until outpost visited
     const zc=Math.random()<0.2?0:3+Math.floor(Math.random()*3);
     setZombiesLeft(zc);
-    // canSleep stays false until player visits outpost
   },[]);
+
+  // Lock to landscape on mobile when game starts
+  useEffect(()=>{
+    if(screen==='game' && window.screen?.orientation?.lock){
+      window.screen.orientation.lock('landscape').catch(()=>{});
+    }
+  },[screen]);
 
   if(screen==='splash')return <SplashScreen onStart={(name)=>{setPlayerName(name||'Ranger');setScreen('game');}}/>;
 
@@ -340,6 +346,7 @@ function App() {
       killZombie={killZombie} onZombieKilled={onZombieKilled}
       logOpen={logOpen} setLogOpen={setLogOpen} logEntries={logEntries}
       keys={keys} setKeys={setKeys} day={day}
+      keysDownRef={keysDownRef}
       weather={weather} hitFlash={hitFlash} playerName={playerName}
     />
   );
@@ -387,7 +394,7 @@ function GameScreen(props){
     cmdScout,doStab,doShoot,doSleep,
     killZombie,onZombieKilled,
     logOpen,setLogOpen,logEntries,keys,setKeys,
-    weather,hitFlash,playerName,
+    weather,hitFlash,playerName,keysDownRef,
   }=props;
 
   // Weather tint overlay colors
@@ -401,7 +408,7 @@ function GameScreen(props){
           setNearScout={()=>{}} setNearZombie={setNearZombie}
           zombiesLeft={zombiesLeft} watching={watching} keysDown={keys}
           killZombie={killZombie} onZombieKilled={onZombieKilled} day={day}
-          weather={weather}/>
+          weather={weather} keysDownRef={keysDownRef}/>
 
         {/* Weather tint */}
         {weatherTint && <div style={{position:'absolute',inset:0,background:weatherTint,pointerEvents:'none',zIndex:10}}/>}
@@ -476,8 +483,10 @@ function GameScreen(props){
       </div>
 
       <BottomNav
-        onLeft={()=>setKeys(k=>({...k,left:true}))}   onLeftUp={()=>setKeys(k=>({...k,left:false}))}
-        onRight={()=>setKeys(k=>({...k,right:true}))}  onRightUp={()=>setKeys(k=>({...k,right:false}))}
+        onLeft={()=>{setKeys(k=>({...k,left:true}));keysDownRef.current.left=true;}}
+        onLeftUp={()=>{setKeys(k=>({...k,left:false}));keysDownRef.current.left=false;}}
+        onRight={()=>{setKeys(k=>({...k,right:true}));keysDownRef.current.right=true;}}
+        onRightUp={()=>{setKeys(k=>({...k,right:false}));keysDownRef.current.right=false;}}
         scene={scene} scoutMode={scoutMode}
         setScoutMode={setScoutMode} cmdScout={cmdScout}
       />
