@@ -170,9 +170,22 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
       const groundY=oy+sh*0.872;
 
       const isMobile = 'ontouchstart' in window;
+      const isPortrait = isMobile && window.innerHeight > window.innerWidth;
+      const ZOOM = isPortrait ? 1.4 : 1.0;
 
       ctx.setTransform(dpr,0,0,dpr,0,0);
       ctx.clearRect(0,0,W,H);
+
+      if(ZOOM > 1){
+        if(s.camX===undefined) s.camX = s.playerX;
+        // Very slow lerp — barely moves, no dizziness
+        s.camX += (s.playerX - s.camX) * 0.03;
+        const playerScreenX = ox + s.camX * sw;
+        const tx = W/2 - playerScreenX * ZOOM;
+        const ty = (H/2 - groundY * ZOOM) * 0.5;
+        ctx.save();
+        ctx.setTransform(dpr*ZOOM, 0, 0, dpr*ZOOM, tx*dpr, ty*dpr);
+      }
 
       ctx.fillStyle='#29ABD9'; ctx.fillRect(0,0,W,H);
       // Background with smoothing for clean scaling
@@ -560,6 +573,9 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
       }
 
       // Restore transform after scene (so HUD rendered by React stays normal)
+      if(ZOOM > 1) ctx.restore();
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+
       animRef.current=requestAnimationFrame(loop);
     }
     animRef.current=requestAnimationFrame(loop);
