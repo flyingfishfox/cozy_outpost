@@ -42,21 +42,23 @@ html, body { width:100%; height:100%; overflow:hidden; background:#0d1620; font-
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
 
+const BASE = 'https://flyingfishfox.github.io/cozy_outpost';
+
 const ASSETS = {
-  scene:   'assets/this_more.png',
-  outpost: 'assets/outpost.png',
-  forest:  'assets/edwdeeddd.png',
-  cloud1:  'assets/Cloud 1.png',  cloud2:'assets/Cloud 2.png',
-  cloud3:  'assets/Cloud 3.png',  cloud4:'assets/Cloud 4.png',
-  cloud5:  'assets/Cloud 5.png',  cloud6:'assets/Cloud 6.png',
-  idle:    'assets/Idle.png',     walk:  'assets/Walk.png',
-  shoot:   'assets/Shoot.png',    stab:  'assets/Stab.png',
-  bird:    'assets/BirdFly.png',  dusk:  'assets/Red Sky.png',
-  pig:     'assets/PigIdle.png',  cat:   'assets/JumpCattt.png',
-  scout:   'background_extra/Dogs-Remastered-03.png',
-  scout02: 'background_extra/Dogs-Remastered-02.png',
-  zombie1: 'background_extra/Attack (1).png',
-  zombie2: 'background_extra/Attack (2).png',
+  scene:   BASE+'/assets/this_more.png',
+  outpost: BASE+'/assets/outpost.png',
+  forest:  BASE+'/assets/edwdeeddd.png',
+  cloud1:  BASE+'/assets/Cloud 1.png',  cloud2: BASE+'/assets/Cloud 2.png',
+  cloud3:  BASE+'/assets/Cloud 3.png',  cloud4: BASE+'/assets/Cloud 4.png',
+  cloud5:  BASE+'/assets/Cloud 5.png',  cloud6: BASE+'/assets/Cloud 6.png',
+  idle:    BASE+'/assets/Idle.png',     walk:   BASE+'/assets/Walk.png',
+  shoot:   BASE+'/assets/Shoot.png',    stab:   BASE+'/assets/Stab.png',
+  bird:    BASE+'/assets/BirdFly.png',  dusk:   BASE+'/assets/Red Sky.png',
+  pig:     BASE+'/assets/PigIdle.png',  cat:    BASE+'/assets/JumpCattt.png',
+  scout:   BASE+'/background_extra/Dogs-Remastered-03.png',
+  scout02: BASE+'/background_extra/Dogs-Remastered-02.png',
+  zombie1: BASE+'/background_extra/Attack (1).png',
+  zombie2: BASE+'/background_extra/Attack (2).png',
 };
 
 const OUTPOST_LINES = [
@@ -225,7 +227,7 @@ function App() {
   const startWatching=()=>{
     setWatching(true);setWatchText(getLine(WATCH_LINES,used.watch));
     if(!watchAudioRef.current){
-      watchAudioRef.current=new Audio('Udio - Rare Dream.ogg');
+      watchAudioRef.current=new Audio(BASE+'/Udio - Rare Dream.ogg');
       watchAudioRef.current.loop=true;watchAudioRef.current.volume=0.6;
     }
     watchAudioRef.current.currentTime=0;
@@ -347,7 +349,7 @@ function SplashScreen({ onStart }) {
   const [name,setName]=React.useState('');
   return (
     <div style={{position:'relative',width:'100%',height:'100%',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',padding:24,margin:'0 auto',boxShadow:'0 0 60px rgba(0,0,0,0.9)',overflow:'hidden'}}>
-      <div style={{position:'absolute',inset:0,backgroundImage:"url('assets/background_glacial_mountains.png')",backgroundSize:'cover',backgroundPosition:'center',imageRendering:'pixelated'}}/>
+      <div style={{position:'absolute',inset:0,backgroundImage:`url('${BASE}/assets/background_glacial_mountains.png')`,backgroundSize:'cover',backgroundPosition:'center',imageRendering:'pixelated'}}/>
       <div style={{position:'absolute',inset:0,background:'rgba(8,14,24,0.55)'}}/>
       <div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:18}}>
         <div style={{fontFamily:'Press Start 2P',fontSize:16,color:'#f0cc28',lineHeight:1.8,textShadow:'3px 3px 0 #000',letterSpacing:2}}>
@@ -447,8 +449,8 @@ function GameScreen(props){
         {/* Outpost */}
         {scene==='outpost' && zombiesLeft>0 && (
           <div style={{position:'absolute',bottom:14,left:'50%',transform:'translateX(-50%)',zIndex:100,display:'flex',gap:10}}>
-            <FloatBtn label="STAB"  onClick={doStab}  icon="/ui_kit/Sword8.png"  disabled={!nearZombie}/>
-            <FloatBtn label="SHOOT" onClick={doShoot} icon="/ui_kit/Deagle.png"  disabled={!nearZombie}/>
+            <FloatBtn label="STAB"  onClick={doStab}  icon={BASE+'/ui_kits/Sword8.png'}  disabled={!nearZombie}/>
+            <FloatBtn label="SHOOT" onClick={doShoot} icon={BASE+'/ui_kits/Deagle.png'}  disabled={!nearZombie}/>
           </div>
         )}
         {scene==='outpost' && zombiesLeft>0 && (
