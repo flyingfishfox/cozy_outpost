@@ -80,7 +80,7 @@ const WATCH_LINES = [
   "Still.","Wind's picked up a little.",
   "The grass moves like water.",
   "Something's circling up there. Hawk maybe.",
-  "Everything very far away. Good.",
+  "Everything's very far away. Good.",
   "Clear skies today.",
   "You could do this all day.",
   "Quiet.",
@@ -349,7 +349,7 @@ function SplashScreen({ onStart }) {
         </div>
         <input value={name} onChange={e=>setName(e.target.value)}
           onKeyDown={e=>e.key==='Enter'&&onStart(name)}
-          placeholder="Your ranger name..."
+          placeholder="Your hiker name..."
           maxLength={14}
           style={{background:'rgba(252,244,210,0.95)',color:'#281806',border:'3px solid #b88820',padding:'8px 14px',fontFamily:'VT323',fontSize:22,width:220,textAlign:'center',outline:'none'}}
         />
