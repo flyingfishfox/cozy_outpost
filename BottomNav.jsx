@@ -38,13 +38,14 @@ function BottomNav({ onLeft, onLeftUp, onRight, onRightUp, scene, scoutMode, set
         background:'rgba(252,244,210,0.1)',
         border:'1px solid rgba(252,244,210,0.25)',
         color: disabled?'rgba(252,244,210,0.3)':'rgba(252,244,210,0.9)',
-        fontFamily:'VT323', fontSize:btnFS,
-        padding: isMobile?'3px 8px':'5px 14px',
+        fontFamily:'VT323', fontSize:16,
+        padding:'6px 14px',
         cursor:disabled?'default':'pointer',
-        display:'flex', alignItems:'center', gap:4,
+        display:'flex', alignItems:'center', gap:5,
         whiteSpace:'nowrap', touchAction:'manipulation',
+        minHeight:38,
       }}>
-      {icon && <img src={icon} style={{imageRendering:'pixelated',height:isMobile?9:12}}/>}
+      {icon && <img src={icon} style={{imageRendering:'pixelated',height:12}}/>}
       {label}
     </button>
   );
@@ -97,7 +98,7 @@ function BottomNav({ onLeft, onLeftUp, onRight, onRightUp, scene, scoutMode, set
               style={{...navBtnStyle}}> SCOUT </button>
           )}
           {scene==='home'    && canSleep   && actionBtn('SLEEP', doSleep, false)}
-          {scene==='forest'  && !watching  && actionBtn('WATCH', startWatching, false)}
+          {scene==='forest'  && !watching  && actionBtn('WATCH VIEW', startWatching, false)}
           {scene==='forest'  &&  watching  && actionBtn('STOP',  stopWatching,  false)}
           {scene==='outpost' && zombiesLeft>0 && <>
             {actionBtn('STAB',  doStab,  !nearZombie, BASE+'/ui_kits/Sword8.png')}
