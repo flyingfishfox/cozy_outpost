@@ -178,9 +178,10 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
         if(s.camX===undefined) s.camX=s.playerX;
         s.camX+=(s.playerX-s.camX)*0.04;
         const px=ox+s.camX*sw;
-        // Clamp so background edges never go past screen edges
         const tx=Math.min(-ox*ZOOM, Math.max(W-(ox+sw)*ZOOM, W/2-px*ZOOM));
-        const ty=Math.min(-oy*ZOOM, Math.max(H-(oy+sh)*ZOOM, H/2-groundY*ZOOM+sh*0.1));
+        // Center scene vertically: offset so scene middle aligns with screen middle
+        const sceneMidY = (oy + sh/2) * ZOOM;
+        const ty = Math.min(0, Math.max(H-sh*ZOOM, H/2 - sceneMidY));
         ctx.save();
         ctx.setTransform(dpr*ZOOM,0,0,dpr*ZOOM,tx*dpr,ty*dpr);
       }
