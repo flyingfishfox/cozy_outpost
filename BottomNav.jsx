@@ -93,7 +93,7 @@ function BottomNav({ onLeft, onLeftUp, onRight, onRightUp, scene, scoutMode, set
       <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,flex:1}}>
         <span style={{fontFamily:'VT323',fontSize:labelFS,color:'rgba(252,244,210,0.25)',letterSpacing:'2px'}}>{sceneLabel}</span>
         <div style={{display:'flex',gap:6,alignItems:'center'}}>
-          {scene==='home' && !canSleep && (
+          {scene==='home' && (
             <button onPointerUp={()=>setScoutMode(true)} onPointerDown={e=>e.currentTarget.style.opacity='0.6'}
               style={{...navBtnStyle}}> SCOUT </button>
           )}
