@@ -178,9 +178,25 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
       const groundY=oy+sh*0.872;
 
       const isMobile = 'ontouchstart' in window;
+      const isPortrait = isMobile && window.innerHeight > window.innerWidth;
+      const ZOOM = isPortrait ? 1.2 : 1.0;
 
       ctx.setTransform(dpr,0,0,dpr,0,0);
       ctx.clearRect(0,0,W,H);
+
+      if(ZOOM > 1){
+        if(s.camX===undefined) s.camX = s.playerX;
+        s.camX += (s.playerX - s.camX) * 0.025;
+        // Clamp so we never show outside scene horizontally
+        const camScreenX = ox + s.camX * sw;
+        const minTx = W - (ox + sw) * ZOOM;
+        const maxTx = -ox * ZOOM;
+        const tx = Math.min(maxTx, Math.max(minTx, W/2 - camScreenX * ZOOM));
+        // Center scene vertically
+        const ty = (H - sh * ZOOM) / 2 - oy * ZOOM;
+        ctx.save();
+        ctx.setTransform(dpr*ZOOM, 0, 0, dpr*ZOOM, tx*dpr, ty*dpr);
+      }
 
       ctx.fillStyle='#29ABD9'; ctx.fillRect(0,0,W,H);
       // Background with smoothing for clean scaling
@@ -567,7 +583,8 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
         ctx.restore();
       }
 
-      // Restore transform after scene (so HUD rendered by React stays normal)
+      if(ZOOM > 1){ ctx.restore(); ctx.setTransform(dpr,0,0,dpr,0,0); }
+
       animRef.current=requestAnimationFrame(loop);
     }
     animRef.current=requestAnimationFrame(loop);
