@@ -59,15 +59,8 @@ const ZOMBIE_PROXIMITY  = 0.18;
 
 function getSceneRect(W,H){
   let sw,sh;
-  // Always fill the full available space, cropping as needed
-  if(W/H > SCENE_ASP){
-    // Wider than scene — fit height, center horizontally
-    sh=H; sw=sh*SCENE_ASP;
-  } else {
-    // Taller than scene (portrait) — fit width, center vertically
-    sw=W; sh=sw/SCENE_ASP;
-  }
-  return{ox:Math.floor((W-sw)/2), oy:Math.floor((H-sh)/2), sw, sh};
+  if(W/H>SCENE_ASP){sh=H;sw=sh*SCENE_ASP;}else{sw=W;sh=sw/SCENE_ASP;}
+  return{ox:Math.floor((W-sw)/2),oy:Math.floor((H-sh)/2),sw,sh};
 }
 
 function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch,setNearZombie,zombiesLeft,watching,keysDown,killZombie,onZombieKilled,day,weather,keysDownRef:externalKeysDownRef}){
@@ -271,7 +264,7 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
 
       // ── drawScout03 — fixed render width so all poses stay same size ──
       // Sprite faces LEFT — flip when facingRight=true
-      function drawScout03(xFrac, row, facingRight){
+      function drawScout03(xFrac, row, facingRight, yOffset=0){
         if(!scout03||!scout03.complete||!scout03.naturalWidth)return;
         row=Math.max(0,Math.min(6,row));
         if(s.scoutRow!==row){s.scoutRow=row;s.scoutFrameIdx=0;s.scoutTick=0;}
@@ -281,12 +274,11 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
         const ci=validCols[s.scoutFrameIdx];
         const sx=D03_COL_X[ci],sy=D03_ROW_Y[row];
         const fw=D03_COL_W[ci],fh=D03_ROW_H[row];
-        // Use constant reference width (col 0 = 50px) so size never wobbles between frames
         const REF_W=50;
         const dw=sw*0.09;
-        const dh=dw*(fh/REF_W); // height scaled from reference, not per-frame width
+        const dh=dw*(fh/REF_W);
         const px=Math.max(ox+sw*0.04,Math.min(ox+sw*0.90,ox+xFrac*sw));
-        const py=Math.round(groundY-dh*0.95);
+        const py=Math.round(groundY-dh*0.95+sh*yOffset);
         if(facingRight){
           ctx.save();
           ctx.translate(Math.round(px+dw/2),py);
@@ -487,7 +479,7 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
 
         // Scout — just wag in place at outpost, no barking
         if(scoutCmdRef.current!=='sleep'){
-          drawScout03(0.07, SCOUT_WAG, true);
+          drawScout03(0.07, SCOUT_WAG, true, -0.04);
         }
 
         s.zombies.forEach(z=>drawZombie(z));
