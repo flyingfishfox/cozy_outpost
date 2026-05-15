@@ -91,10 +91,7 @@ function BottomNav({ onLeft, onLeftUp, onRight, onRightUp, scene, scoutMode, set
 
       {/* Center — scene label + contextual actions */}
       <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,flex:1}}>
-        {scene==='home' && (
-          <button onPointerUp={()=>setScoutMode(true)} onPointerDown={e=>e.currentTarget.style.opacity='0.6'}
-            style={{...navBtnStyle}}> SCOUT </button>
-        )}
+        {scene==='home' && actionBtn('SCOUT', ()=>setScoutMode(true), false)}
         {scene==='home'    && canSleep   && actionBtn('SLEEP', doSleep, false)}
         {scene==='forest'  && !watching  && actionBtn('WATCH VIEW', startWatching, false)}
         {scene==='forest'  &&  watching  && actionBtn('STOP',  stopWatching,  false)}
