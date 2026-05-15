@@ -422,10 +422,16 @@ function GameScreen(props){
         {/* Hit flash */}
         {hitFlash && <div style={{position:'absolute',inset:0,background:'rgba(255,255,255,0.18)',pointerEvents:'none',zIndex:11}}/>}
 
-        <HUDBar day={day} morale={morale} onLogOpen={()=>setLogOpen(true)} portrait={portrait}/>
+        <HUDBar
+          day={day} morale={morale} onLogOpen={()=>setLogOpen(true)} portrait={portrait}
+          scene={scene}
+          watching={watching} startWatching={startWatching} stopWatching={stopWatching}
+          canSleep={canSleep} doSleep={doSleep}
+          zombiesLeft={zombiesLeft} nearZombie={nearZombie} doStab={doStab} doShoot={doShoot}
+        />
 
         {/* Toasts */}
-        <div style={{position:'absolute',top:38,left:'50%',transform:'translateX(-50%)',zIndex:200,pointerEvents:'none',display:'flex',flexDirection:'column',alignItems:'center',gap:2}}>
+        <div style={{position:'absolute',top:42,left:'50%',transform:'translateX(-50%)',zIndex:200,pointerEvents:'none',display:'flex',flexDirection:'column',alignItems:'center',gap:2}}>
           {toasts.map(t=>(
             <div key={t.id} style={{background:'rgba(10,6,2,0.88)',border:'1px solid rgba(252,244,210,0.15)',padding:'4px 12px',fontFamily:'VT323',fontSize:16,color:'rgba(252,244,210,0.9)',whiteSpace:'nowrap',animation:'toastIn .18s ease-out'}}>
               {t.msg}
@@ -444,38 +450,6 @@ function GameScreen(props){
         {watching && watchText && (
           <div key={watchText} style={{position:'absolute',bottom:'18%',left:'50%',transform:'translateX(-50%)',background:'rgba(252,244,210,0.96)',border:'2px solid #886030',borderRadius:4,padding:'6px 14px',fontFamily:'VT323',fontSize:16,color:'#381e08',zIndex:90,width:'auto',maxWidth:'55%',textAlign:'center',lineHeight:1.4,animation:'bubbleFade 3.6s ease-out forwards',pointerEvents:'none'}}>
             {watchText}
-          </div>
-        )}
-
-        {/* Forest */}
-        {scene==='forest' && !watching && (
-          <div style={{position:'absolute',bottom:14,left:'50%',transform:'translateX(-50%)',zIndex:100}}>
-            <FloatBtn portrait={portrait} label="WATCH THE VIEW" onClick={startWatching}/>
-          </div>
-        )}
-        {scene==='forest' && watching && (
-          <div style={{position:'absolute',bottom:14,left:'50%',transform:'translateX(-50%)',zIndex:100}}>
-            <FloatBtn portrait={portrait} label="STOP WATCHING" onClick={stopWatching}/>
-          </div>
-        )}
-
-        {/* Outpost */}
-        {scene==='outpost' && zombiesLeft>0 && (
-          <div style={{position:'absolute',bottom:14,left:'50%',transform:'translateX(-50%)',zIndex:100,display:'flex',gap:10}}>
-            <FloatBtn portrait={portrait} label="STAB"  onClick={doStab}  icon={BASE+'/ui_kits/Sword8.png'}  disabled={!nearZombie}/>
-            <FloatBtn portrait={portrait} label="SHOOT" onClick={doShoot} icon={BASE+'/ui_kits/Deagle.png'}  disabled={!nearZombie}/>
-          </div>
-        )}
-        {scene==='outpost' && zombiesLeft>0 && (
-          <div style={{position:'absolute',top:38,right:8,zIndex:60,background:'rgba(10,6,2,0.88)',border:'1px solid rgba(252,244,210,0.12)',padding:'3px 8px',fontFamily:'Press Start 2P',fontSize:7,color:'#c06060'}}>
-            x{zombiesLeft}
-          </div>
-        )}
-
-        {/* Sleep */}
-        {scene==='home' && canSleep && (
-          <div style={{position:'absolute',bottom:14,left:'50%',transform:'translateX(-50%)',zIndex:100}}>
-            <FloatBtn portrait={portrait} label="SLEEP" onClick={doSleep}/>
           </div>
         )}
 
