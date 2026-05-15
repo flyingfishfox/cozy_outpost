@@ -90,25 +90,22 @@ function BottomNav({ onLeft, onLeftUp, onRight, onRightUp, scene, scoutMode, set
       {arrowBtn('left',  destinations.left,  onLeft,  onLeftUp)}
 
       {/* Center — scene label + contextual actions */}
-      <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,flex:1}}>
-        <span style={{fontFamily:'VT323',fontSize:labelFS,color:'rgba(252,244,210,0.25)',letterSpacing:'2px'}}>{sceneLabel}</span>
-        <div style={{display:'flex',gap:6,alignItems:'center'}}>
-          {scene==='home' && (
-            <button onPointerUp={()=>setScoutMode(true)} onPointerDown={e=>e.currentTarget.style.opacity='0.6'}
-              style={{...navBtnStyle}}> SCOUT </button>
-          )}
-          {scene==='home'    && canSleep   && actionBtn('SLEEP', doSleep, false)}
-          {scene==='forest'  && !watching  && actionBtn('WATCH VIEW', startWatching, false)}
-          {scene==='forest'  &&  watching  && actionBtn('STOP',  stopWatching,  false)}
-          {scene==='outpost' && zombiesLeft>0 && <>
-            {actionBtn('STAB',  doStab,  !nearZombie, BASE+'/ui_kits/Sword8.png')}
-            {actionBtn('SHOOT', doShoot, !nearZombie, BASE+'/ui_kits/Deagle.png')}
-            <span style={{fontFamily:'Press Start 2P',fontSize:6,color:'#c06060'}}>x{zombiesLeft}</span>
-          </>}
-          {scene==='outpost' && zombiesLeft===0 && (
-            <span style={{fontFamily:'VT323',fontSize:btnFS,color:'rgba(252,244,210,0.3)'}}>ALL CLEAR</span>
-          )}
-        </div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,flex:1}}>
+        {scene==='home' && (
+          <button onPointerUp={()=>setScoutMode(true)} onPointerDown={e=>e.currentTarget.style.opacity='0.6'}
+            style={{...navBtnStyle}}> SCOUT </button>
+        )}
+        {scene==='home'    && canSleep   && actionBtn('SLEEP', doSleep, false)}
+        {scene==='forest'  && !watching  && actionBtn('WATCH VIEW', startWatching, false)}
+        {scene==='forest'  &&  watching  && actionBtn('STOP',  stopWatching,  false)}
+        {scene==='outpost' && zombiesLeft>0 && <>
+          {actionBtn('STAB',  doStab,  !nearZombie, BASE+'/ui_kits/Sword8.png')}
+          {actionBtn('SHOOT', doShoot, !nearZombie, BASE+'/ui_kits/Deagle.png')}
+          <span style={{fontFamily:'Press Start 2P',fontSize:6,color:'#c06060'}}>x{zombiesLeft}</span>
+        </>}
+        {scene==='outpost' && zombiesLeft===0 && (
+          <span style={{fontFamily:'VT323',fontSize:btnFS,color:'rgba(252,244,210,0.3)'}}>ALL CLEAR</span>
+        )}
       </div>
 
       {arrowBtn('right', destinations.right, onRight, onRightUp)}
