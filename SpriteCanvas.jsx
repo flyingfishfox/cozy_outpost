@@ -169,7 +169,7 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
       const{ox,oy,sw,sh}=getSceneRect(W,H);
       const groundY=oy+sh*0.872;
       const isMobile='ontouchstart' in window;
-      const ZOOM=isMobile?1.15:1.0;
+      const ZOOM=isMobile?2.0:1.0;
 
       ctx.setTransform(dpr,0,0,dpr,0,0);
       ctx.clearRect(0,0,W,H);
