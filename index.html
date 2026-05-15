@@ -40,6 +40,8 @@ html, body { width:100%; height:100%; overflow:hidden; background:#0d1620; font-
 <script type="text/babel" src="Panels.jsx"></script>
 <script type="text/babel" src="SpriteCanvas.jsx"></script>
 <script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
 // Detect portrait orientation
 function usePortrait(){
   const [portrait,setPortrait] = React.useState(window.innerHeight>window.innerWidth);
