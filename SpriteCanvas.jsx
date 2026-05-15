@@ -58,14 +58,6 @@ const FOREST_EXIT_RIGHT = 0.92;
 const ZOMBIE_PROXIMITY  = 0.18;
 
 function getSceneRect(W,H){
-  const isMobile = 'ontouchstart' in window;
-  if(isMobile){
-    // Stretch to fill full height, center horizontally
-    const sh = H;
-    const sw = sh * SCENE_ASP;
-    const ox = Math.floor((W - sw) / 2);
-    return {ox, oy:0, sw, sh};
-  }
   let sw,sh;
   if(W/H>SCENE_ASP){sh=H;sw=sh*SCENE_ASP;}else{sw=W;sh=sw/SCENE_ASP;}
   return{ox:Math.floor((W-sw)/2),oy:Math.floor((H-sh)/2),sw,sh};
@@ -176,26 +168,21 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
       const W=cv2.width/dpr, H=cv2.height/dpr;
       const{ox,oy,sw,sh}=getSceneRect(W,H);
       const groundY=oy+sh*0.872;
-
-      const isMobile = 'ontouchstart' in window;
-      const isPortrait = isMobile && window.innerHeight > window.innerWidth;
-      const ZOOM = isPortrait ? 1.2 : 1.0;
+      const isMobile='ontouchstart' in window;
+      const ZOOM=isMobile?1.15:1.0;
 
       ctx.setTransform(dpr,0,0,dpr,0,0);
       ctx.clearRect(0,0,W,H);
 
-      if(ZOOM > 1){
-        if(s.camX===undefined) s.camX = s.playerX;
-        s.camX += (s.playerX - s.camX) * 0.025;
-        // Clamp so we never show outside scene horizontally
-        const camScreenX = ox + s.camX * sw;
-        const minTx = W - (ox + sw) * ZOOM;
-        const maxTx = -ox * ZOOM;
-        const tx = Math.min(maxTx, Math.max(minTx, W/2 - camScreenX * ZOOM));
-        // Center scene vertically
-        const ty = (H - sh * ZOOM) / 2 - oy * ZOOM;
+      if(ZOOM>1){
+        if(s.camX===undefined) s.camX=s.playerX;
+        s.camX+=(s.playerX-s.camX)*0.04;
+        const px=ox+s.camX*sw;
+        // Clamp so background edges never go past screen edges
+        const tx=Math.min(-ox*ZOOM, Math.max(W-(ox+sw)*ZOOM, W/2-px*ZOOM));
+        const ty=Math.min(-oy*ZOOM, Math.max(H-(oy+sh)*ZOOM, H/2-groundY*ZOOM+sh*0.1));
         ctx.save();
-        ctx.setTransform(dpr*ZOOM, 0, 0, dpr*ZOOM, tx*dpr, ty*dpr);
+        ctx.setTransform(dpr*ZOOM,0,0,dpr*ZOOM,tx*dpr,ty*dpr);
       }
 
       ctx.fillStyle='#29ABD9'; ctx.fillRect(0,0,W,H);
@@ -583,8 +570,7 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
         ctx.restore();
       }
 
-      if(ZOOM > 1){ ctx.restore(); ctx.setTransform(dpr,0,0,dpr,0,0); }
-
+      if(ZOOM>1){ctx.restore();ctx.setTransform(dpr,0,0,dpr,0,0);}
       animRef.current=requestAnimationFrame(loop);
     }
     animRef.current=requestAnimationFrame(loop);
