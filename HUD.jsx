@@ -1,5 +1,12 @@
 // HUD.jsx
 function HUDBar({ day, morale, onLogOpen }) {
+  const toggleFullscreen = () => {
+    if(!document.fullscreenElement){
+      document.documentElement.requestFullscreen().catch(()=>{});
+    } else {
+      document.exitFullscreen().catch(()=>{});
+    }
+  };
   return (
     <div style={{
       position:'absolute', top:0, left:0, right:0, height:34,
@@ -12,15 +19,15 @@ function HUDBar({ day, morale, onLogOpen }) {
         <span style={{fontFamily:'VT323',fontSize:17,color:'rgba(252,244,210,0.7)',letterSpacing:'1px'}}>
           MORALE <span style={{color:'rgba(252,244,210,0.95)'}}>{morale}</span>
         </span>
-        <button onClick={onLogOpen} style={{
-          background:'none', border:'none',
-          fontSize:20, cursor:'pointer', lineHeight:1,
-          padding:'2px 4px',
-        }}>📓</button>
+        <button onClick={onLogOpen} style={{background:'none',border:'none',fontSize:20,cursor:'pointer',lineHeight:1,padding:'2px 4px'}}>📓</button>
       </div>
-      <span style={{fontFamily:'VT323',fontSize:17,color:'rgba(252,244,210,0.7)',letterSpacing:'1px'}}>
-        DAY <span style={{color:'rgba(252,244,210,0.95)'}}>{day}</span>
-      </span>
+      <div style={{display:'flex',alignItems:'center',gap:8}}>
+        <span style={{fontFamily:'VT323',fontSize:17,color:'rgba(252,244,210,0.7)',letterSpacing:'1px'}}>
+          DAY <span style={{color:'rgba(252,244,210,0.95)'}}>{day}</span>
+        </span>
+        <button onClick={toggleFullscreen} title="Fullscreen"
+          style={{background:'none',border:'none',fontSize:15,cursor:'pointer',lineHeight:1,padding:'2px 4px',color:'rgba(252,244,210,0.45)'}}>⛶</button>
+      </div>
     </div>
   );
 }
