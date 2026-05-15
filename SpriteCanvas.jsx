@@ -58,9 +58,21 @@ const FOREST_EXIT_RIGHT = 0.92;
 const ZOMBIE_PROXIMITY  = 0.18;
 
 function getSceneRect(W,H){
-  let sw,sh;
-  if(W/H>SCENE_ASP){sh=H;sw=sh*SCENE_ASP;}else{sw=W;sh=sw/SCENE_ASP;}
-  return{ox:Math.floor((W-sw)/2),oy:Math.floor((H-sh)/2),sw,sh};
+  const isMobile = 'ontouchstart' in window;
+  const isPortrait = isMobile && H > W;
+  let sw,sh,ox,oy;
+  if(isPortrait){
+    // Fill full width on portrait mobile, center vertically
+    sw = W;
+    sh = sw / SCENE_ASP;
+    ox = 0;
+    oy = Math.floor((H - sh) / 2);
+  } else {
+    if(W/H>SCENE_ASP){sh=H;sw=sh*SCENE_ASP;}else{sw=W;sh=sw/SCENE_ASP;}
+    ox=Math.floor((W-sw)/2);
+    oy=Math.floor((H-sh)/2);
+  }
+  return{ox,oy,sw,sh};
 }
 
 function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch,setNearZombie,zombiesLeft,watching,keysDown,killZombie,onZombieKilled,day,weather,keysDownRef:externalKeysDownRef}){
