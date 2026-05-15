@@ -422,13 +422,7 @@ function GameScreen(props){
         {/* Hit flash */}
         {hitFlash && <div style={{position:'absolute',inset:0,background:'rgba(255,255,255,0.18)',pointerEvents:'none',zIndex:11}}/>}
 
-        <HUDBar
-          day={day} morale={morale} onLogOpen={()=>setLogOpen(true)} portrait={portrait}
-          scene={scene}
-          watching={watching} startWatching={startWatching} stopWatching={stopWatching}
-          canSleep={canSleep} doSleep={doSleep}
-          zombiesLeft={zombiesLeft} nearZombie={nearZombie} doStab={doStab} doShoot={doShoot}
-        />
+        <HUDBar day={day} morale={morale} onLogOpen={()=>setLogOpen(true)}/>
 
         {/* Toasts */}
         <div style={{position:'absolute',top:42,left:'50%',transform:'translateX(-50%)',zIndex:200,pointerEvents:'none',display:'flex',flexDirection:'column',alignItems:'center',gap:2}}>
@@ -469,6 +463,9 @@ function GameScreen(props){
         onRightUp={()=>{setKeys(k=>({...k,right:false}));keysDownRef.current.right=false;}}
         scene={scene} scoutMode={scoutMode}
         setScoutMode={setScoutMode} cmdScout={cmdScout} portrait={portrait}
+        watching={watching} startWatching={startWatching} stopWatching={stopWatching}
+        canSleep={canSleep} doSleep={doSleep}
+        zombiesLeft={zombiesLeft} nearZombie={nearZombie} doStab={doStab} doShoot={doShoot}
       />
     </div>
   );
