@@ -179,9 +179,9 @@ function SceneLayer({assets,scene,onSceneChange,playerAction,scoutCmd,scoutFetch
         s.camX+=(s.playerX-s.camX)*0.04;
         const px=ox+s.camX*sw;
         const tx=Math.min(-ox*ZOOM, Math.max(W-(ox+sw)*ZOOM, W/2-px*ZOOM));
-        // Center scene vertically: offset so scene middle aligns with screen middle
-        const sceneMidY = (oy + sh/2) * ZOOM;
-        const ty = Math.min(0, Math.max(H-sh*ZOOM, H/2 - sceneMidY));
+        // Pin ground to 65% down the screen so scene is centered and visible
+        const targetGroundY = H * 0.65;
+        const ty = Math.min(0, Math.max(H - sh*ZOOM, targetGroundY - groundY*ZOOM));
         ctx.save();
         ctx.setTransform(dpr*ZOOM,0,0,dpr*ZOOM,tx*dpr,ty*dpr);
       }
