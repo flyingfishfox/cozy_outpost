@@ -14,11 +14,15 @@ canvas { image-rendering:pixelated; image-rendering:crisp-edges; }
 html, body { width:100%; height:100%; overflow:hidden; background:#0d1620; font-family:'VT323',monospace; user-select:none; }
 #root { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
 #portrait-warn { display:none; }
-/* Fullscreen — fill everything */
-:fullscreen #root,
-:-webkit-full-screen #root { width:100vw; height:100vh; }
-:fullscreen canvas,
-:-webkit-full-screen canvas { width:100% !important; height:100% !important; }
+:fullscreen #root, :-webkit-full-screen #root { width:100vw; height:100vh; }
+
+/* Portrait mode — shrink UI so game area is bigger */
+@media (orientation:portrait) {
+  .hud-bar { height:24px !important; font-size:12px !important; }
+  .nav-bar  { height:52px !important; }
+  .nav-bar span, .nav-bar button { font-size:12px !important; }
+  .float-btn { font-size:11px !important; padding:5px 10px !important; }
+}
 @keyframes toastIn  { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
 @keyframes panelUp  { from{transform:translateY(44px);opacity:0} to{transform:translateY(0);opacity:1} }
 @keyframes bubbleFade { 0%{opacity:0} 8%{opacity:1} 70%{opacity:1} 100%{opacity:0} }
@@ -36,7 +40,17 @@ html, body { width:100%; height:100%; overflow:hidden; background:#0d1620; font-
 <script type="text/babel" src="Panels.jsx"></script>
 <script type="text/babel" src="SpriteCanvas.jsx"></script>
 <script type="text/babel">
-const { useState, useEffect, useRef, useCallback } = React;
+// Detect portrait orientation
+function usePortrait(){
+  const [portrait,setPortrait] = React.useState(window.innerHeight>window.innerWidth);
+  React.useEffect(()=>{
+    const fn=()=>setPortrait(window.innerHeight>window.innerWidth);
+    window.addEventListener('resize',fn);
+    screen.orientation?.addEventListener('change',fn);
+    return()=>{window.removeEventListener('resize',fn);screen.orientation?.removeEventListener('change',fn);};
+  },[]);
+  return portrait;
+}
 
 const BASE = 'https://flyingfishfox.github.io/cozy_outpost';
 
@@ -133,17 +147,19 @@ const floatBtn = {
   transition:'background .08s',
 };
 
-function FloatBtn({ label, onClick, icon, disabled }){
+function FloatBtn({ label, onClick, icon, disabled, portrait }){
   return (
     <button
       onPointerUp={disabled?undefined:onClick}
       onPointerDown={e=>!disabled&&(e.currentTarget.style.background='rgba(252,244,210,0.18)')}
-      onPointerUp={e=>{e.currentTarget.style.background='rgba(10,6,2,0.88)';if(!disabled)onClick();}}
-      style={{...floatBtn, opacity:disabled?0.35:1, cursor:disabled?'default':'pointer',
-        minHeight:44, // minimum tap target
-        touchAction:'manipulation',
+      style={{...floatBtn,
+        opacity:disabled?0.35:1,
+        cursor:disabled?'default':'pointer',
+        fontSize: portrait ? 14 : 18,
+        padding: portrait ? '4px 10px' : '7px 18px',
+        minHeight:44, touchAction:'manipulation',
       }}>
-      {icon && <img src={icon} style={{imageRendering:'pixelated',height:13,display:'block'}}/>}
+      {icon && <img src={icon} style={{imageRendering:'pixelated',height: portrait?10:13,display:'block'}}/>}
       {label}
     </button>
   );
@@ -373,6 +389,7 @@ function SplashScreen({ onStart }) {
 }
 
 function GameScreen(props){
+  const portrait = usePortrait();
   const {
     assets,scene,onSceneChange,day,morale,toasts,
     bubble,bubbleKey,watching,watchText,startWatching,stopWatching,
@@ -403,7 +420,7 @@ function GameScreen(props){
         {/* Hit flash */}
         {hitFlash && <div style={{position:'absolute',inset:0,background:'rgba(255,255,255,0.18)',pointerEvents:'none',zIndex:11}}/>}
 
-        <HUDBar day={day} morale={morale} onLogOpen={()=>setLogOpen(true)}/>
+        <HUDBar day={day} morale={morale} onLogOpen={()=>setLogOpen(true)} portrait={portrait}/>
 
         {/* Toasts */}
         <div style={{position:'absolute',top:38,left:'50%',transform:'translateX(-50%)',zIndex:200,pointerEvents:'none',display:'flex',flexDirection:'column',alignItems:'center',gap:2}}>
@@ -431,20 +448,20 @@ function GameScreen(props){
         {/* Forest */}
         {scene==='forest' && !watching && (
           <div style={{position:'absolute',bottom:14,left:'50%',transform:'translateX(-50%)',zIndex:100}}>
-            <FloatBtn label="WATCH THE VIEW" onClick={startWatching}/>
+            <FloatBtn portrait={portrait} label="WATCH THE VIEW" onClick={startWatching}/>
           </div>
         )}
         {scene==='forest' && watching && (
           <div style={{position:'absolute',bottom:14,left:'50%',transform:'translateX(-50%)',zIndex:100}}>
-            <FloatBtn label="STOP WATCHING" onClick={stopWatching}/>
+            <FloatBtn portrait={portrait} label="STOP WATCHING" onClick={stopWatching}/>
           </div>
         )}
 
         {/* Outpost */}
         {scene==='outpost' && zombiesLeft>0 && (
           <div style={{position:'absolute',bottom:14,left:'50%',transform:'translateX(-50%)',zIndex:100,display:'flex',gap:10}}>
-            <FloatBtn label="STAB"  onClick={doStab}  icon={BASE+'/ui_kits/Sword8.png'}  disabled={!nearZombie}/>
-            <FloatBtn label="SHOOT" onClick={doShoot} icon={BASE+'/ui_kits/Deagle.png'}  disabled={!nearZombie}/>
+            <FloatBtn portrait={portrait} label="STAB"  onClick={doStab}  icon={BASE+'/ui_kits/Sword8.png'}  disabled={!nearZombie}/>
+            <FloatBtn portrait={portrait} label="SHOOT" onClick={doShoot} icon={BASE+'/ui_kits/Deagle.png'}  disabled={!nearZombie}/>
           </div>
         )}
         {scene==='outpost' && zombiesLeft>0 && (
@@ -456,7 +473,7 @@ function GameScreen(props){
         {/* Sleep */}
         {scene==='home' && canSleep && (
           <div style={{position:'absolute',bottom:14,left:'50%',transform:'translateX(-50%)',zIndex:100}}>
-            <FloatBtn label="SLEEP" onClick={doSleep}/>
+            <FloatBtn portrait={portrait} label="SLEEP" onClick={doSleep}/>
           </div>
         )}
 
@@ -475,7 +492,7 @@ function GameScreen(props){
         onRight={()=>{setKeys(k=>({...k,right:true}));keysDownRef.current.right=true;}}
         onRightUp={()=>{setKeys(k=>({...k,right:false}));keysDownRef.current.right=false;}}
         scene={scene} scoutMode={scoutMode}
-        setScoutMode={setScoutMode} cmdScout={cmdScout}
+        setScoutMode={setScoutMode} cmdScout={cmdScout} portrait={portrait}
       />
     </div>
   );
